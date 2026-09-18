@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.app.name }}-server
+  labels:
+    app: {{ .Values.app.name }}-server
+spec:
+  replicas: {{ .Values.server.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.app.name }}-server
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.app.name }}-server
+    spec:
+      containers:
+        - name: {{ .Values.app.name }}-server
+          image: {{ .Values.server.image }}:{{ .Values.server.tag }}
+          ports:
+            - name: server-port
+              containerPort: {{ .Values.server.containerPort }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.app.name }}-secret
+          env:
+            - name: DB_HOST
+              value: {{ .Values.database.host | quote }}
+            - name: DB_PORT
+              value: {{ .Values.database.port | default 3306 | quote }}
+            - name: DB_NAME
+              value: {{ .Values.database.name | quote }}
+            - name: DB_USER
+              value: {{ .Values.database.user | quote }}
+            - name: DB_SSL
+              value: {{ .Values.database.ssl | default true | quote }}
+            - name: DB_SSL_REJECT_UNAUTHORIZED
+              value: {{ .Values.database.sslRejectUnauthorized | default true | quote }}
+            - name: DB_LOGGING
+              value: "false"
+            - name: GOOGLE_CLIENT_ID
+              value: {{ .Values.server.googleClientId | quote }}
+            - name: FB_CLIENT_ID
+              value: {{ .Values.server.fbClientId | quote }}
+            - name: APPLE_KEY_ID
+              value: {{ .Values.server.appleKeyId | quote }}
+            - name: APPLE_TEAM_ID
+              value: {{ .Values.server.appleTeamId | quote }}
+            - name: APPLE_CLIENT_ID
+              value: {{ .Values.server.appleClientId | quote }}
+            - name: ADMIN_EMAIL
+              value: {{ .Values.server.adminEmail | quote }}
