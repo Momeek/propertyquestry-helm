@@ -14,9 +14,6 @@ spec:
       labels:
         app: {{ .Values.client.name }}
     spec:
-      {{- if and .Values.dockerregistry.enabled .Values.dockerregistry.username .Values.dockerregistry.password }}
-      imagePullSecrets:
-        - name: {{ .Values.dockerregistry.name }}
       {{- end }}
       {{- if .Values.initcontainers.enabled }}
       initContainers:
