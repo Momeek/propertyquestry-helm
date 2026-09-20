@@ -1,6 +1,7 @@
 app:
   name: propertyquest
 server:
+  name: propertyquest-server
   image: 846240746474.dkr.ecr.us-east-1.amazonaws.com/propertybackendimg
   tag: 76744d54b513e69d67560ef928761d3771ff1bc4
   replicas: 1
@@ -14,6 +15,7 @@ server:
   appleClientId: "your-real-apple-client-id"
   adminEmail: "salihu@gmail.com"
 client:
+  name: propertyquest-client
   image: 846240746474.dkr.ecr.us-east-1.amazonaws.com/propertyfrontendimg
   tag: 76744d54b513e69d67560ef928761d3771ff1bc4
   replicas: 2
@@ -24,7 +26,12 @@ initcontainers:
   enabled: true
   image: busybox
   tag: latest
-  serverCommand: ["sh", "-c", "until nslookup server-service.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for server-service; sleep 2; done"]
+  serverCommand:
+    [
+      "sh",
+      "-c",
+      "until nslookup server-service.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for server-service; sleep 2; done",
+    ]
 ingress:
   enabled: true
   host: propertyquest.meeklab.site
@@ -40,10 +47,14 @@ migration:
   enabled: true
   backoffLimit: 3
   command: ["npx"]
-  args: ["sequelize-cli", "db:migrate", "--config", "src/config/config.js", "--migrations-path", "src/migrations", "--env", "production"]
-backend:
-  image: 846240746474.dkr.ecr.us-east-1.amazonaws.com/propertyquestrybackendimg
-  tag: c5cc9eb6b04432651e34bff7caf821f56496103b
-frontend:
-  image: 846240746474.dkr.ecr.us-east-1.amazonaws.com/propertyquestryfrontendimg
-  tag: c5cc9eb6b04432651e34bff7caf821f56496103b
+  args:
+    [
+      "sequelize-cli",
+      "db:migrate",
+      "--config",
+      "src/config/config.js",
+      "--migrations-path",
+      "src/migrations",
+      "--env",
+      "production",
+    ]

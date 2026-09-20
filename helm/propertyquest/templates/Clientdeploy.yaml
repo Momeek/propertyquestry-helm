@@ -22,14 +22,14 @@ spec:
             - sh
             - -c
             - |
-              until nslookup mysql.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for propertydb-service; sleep 2; done
+              until nslookup mysql.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for mysql; sleep 2; done
         - name: init-server
           image: {{ .Values.initcontainers.image }}
           command:
             - sh
             - -c
             - |
-              until nslookup propertyserver-service.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for propertyserver-service; sleep 2; done
+              until nslookup server-service.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for server-service; sleep 2; done
       {{- end }}
       containers:
         - name: propertyquest-client-container
@@ -41,4 +41,4 @@ spec:
             - name: NODE_ENV
               value: "production"
             - name: NEXT_PUBLIC_API_URL
-              value: "http://localhost:8080/api"
+              value: "http://server-service:{{ .Values.server.servicePort }}/api"
