@@ -44,7 +44,7 @@ database:
   ssl: true
   sslRejectUnauthorized: false
 migration:
-  enabled: true
+  enabled: false
   backoffLimit: 3
   command: ["npx"]
   args:
